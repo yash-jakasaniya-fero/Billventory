@@ -1,0 +1,35 @@
+# Python Bytecode
+*.pyc
+*.pyo
+__pycache__/
+
+# Django Stuff
+*.log
+*.pot
+*.py[cod]
+*.sqlite3
+*.db
+media/
+staticfiles/
+
+# Virtual Environment
+venv/
+env/
+.env/
+
+# Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# IDEs
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*~
+*.bak
+*.swp
