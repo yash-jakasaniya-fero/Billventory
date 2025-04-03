@@ -8,49 +8,7 @@ from .serializers import OrganizationCreateSerializer, OrganizationSerializer, O
 
 class OrganizationViewSet(viewsets.ModelViewSet):
     queryset = Organization.objects.all()
-    serializer_class = OrganizationCreateSerializer
-
-    @action(methods=['post'], detail=False)
-    def create_organization(self, request, pk=None):
-        organization_data = request.data.get('organization')
-        user_data = request.data.get('user')
-        subscription_data = request.data.get('subscription')
-
-        serializer = OrganizationSerializer(data=organization_data)
-        if serializer.is_valid():
-            organization = serializer.save()
-
-            user_serializer = OrganizationUserSerializer(data=user_data)
-            if user_serializer.is_valid():
-                user_serializer.save(organization=organization)
-
-            subscription_serializer = OrganizationSubscriptionSerializer(data=subscription_data)
-            if subscription_serializer.is_valid():
-                subscription_serializer.save(organization=organization)
-
-            return Response({
-                'organization': serializer.data,
-                'user': user_serializer.data,
-                'subscription': subscription_serializer.data
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        organizations = []
-
-        for org in queryset:
-            organization_data = OrganizationSerializer(org).data
-            users_data = OrganizationUserSerializer(org.organization_users.all(), many=True).data
-            subscriptions_data = OrganizationSubscriptionSerializer(org.organization_subscriptions.all(),many=True).data
-
-            organizations.append({
-                'organization': organization_data,
-                'users': users_data,
-                'subscriptions': subscriptions_data
-            })
-
-        return Response(organizations)
+    serializer_class = OrganizationSerializer
 
 
 class OrganizationUserViewSet(viewsets.ModelViewSet):
