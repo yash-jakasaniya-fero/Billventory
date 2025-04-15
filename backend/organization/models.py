@@ -1,129 +1,105 @@
+import random
+import string
+from email.policy import default
+
 from django.db import models
 import uuid
 from django.contrib.auth.models import User
 from lib.models import BaseModel
-from core.models import Supplier
-
-
-class Organization(BaseModel):
-    org_id = models.UUIDField(default=uuid.uuid4, editable=False)
-    org_name = models.CharField(max_length=255)
-    org_address = models.CharField(max_length=255)
-    org_logo = models.ImageField(blank=True, null=True)
-    gst_number = models.BooleanField(max_length=15, blank=True, null=True)
-    has_gst_number = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        if self.has_gst_number and not self.gst_number:
-            raise ValueError("GST provided if has_gst_number")
-        super().save(*args, **kwargs)
+from lib.choices import RoleChoices, StatusChoices, PaymentMethodChoices
 
 class OrganizationUser(BaseModel):
-    ROLE_CHOICES=[
-        ('Owner','Owner'),
-        ('Manager','Manager'),
-        ('Admin','Admin'),
-    ]
-    organization = models.ForeignKey(Organization, related_name='organization_users', on_delete=models.CASCADE)
-    org_user = models.OneToOneField(User, on_delete=models.CASCADE)
+    org_user = models.CharField(max_length=100, default=False)
     user_email = models.EmailField(unique=True)
-    user_role = models.CharField(choices=ROLE_CHOICES,max_length=50)
+    user_role = models.CharField(choices=RoleChoices.choices, max_length=50)
     is_active = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ['org_user']
 
 
+class Organization(BaseModel):
+    org_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(OrganizationUser, related_name='organization_user', on_delete=models.CASCADE)
+    org_name = models.CharField(max_length=255)
+    org_address = models.CharField(max_length=255)
+    org_logo = models.ImageField(blank=True, null=True)
+    has_gst_number = models.BooleanField(default=False)
+    gst_number = models.CharField(max_length=15, blank=True, null=True)
+
+
 class OrganizationSubscription(BaseModel):
-    STATUS_CHOICES=[
-        ('Active','Active'),
-        ('Expired','Expired'),
-    ]
     organization = models.ForeignKey(Organization, related_name='organization_subscriptions', on_delete=models.CASCADE)
     plan_name = models.CharField(max_length=100)
-    plan_price = models.PositiveIntegerField
+    plan_price = models.PositiveIntegerField(default=0)
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField()
-    status = models.CharField(choices=STATUS_CHOICES,max_length=50)
+    status = models.CharField(choices=StatusChoices.choices, max_length=50)
 
+
+class Supplier(BaseModel):
+    supplier_code = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    email = models.EmailField(max_length=255, blank=True, null=True)
+    gst_number = models.CharField(max_length=15, blank=True, null=True)
+    name = models.CharField(max_length=255)
+    contact_person = models.CharField(max_length=255, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class OrganizationInventory(BaseModel):
     organization = models.ForeignKey(Organization, related_name='organization_inventories', on_delete=models.CASCADE)
-    product = models.CharField(max_length=255)
-    product_code = models.CharField(max_length=100, unique=True)
-    quantity_in_stock = models.PositiveIntegerField()
+    product_name = models.CharField(max_length=255)
+    product_quantity = models.PositiveIntegerField(default=0)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity_in_stock = models.PositiveIntegerField(default=0)
 
 
 class OrganizationProduct(BaseModel):
-    organization = models.ForeignKey(Organization, related_name='organization_products', on_delete=models.CASCADE)
-    product_name = models.ForeignKey(OrganizationInventory, related_name='product_name', on_delete=models.CASCADE)
-
-
-class OrganizationBillingItem(BaseModel):
-    item_name = models.CharField(max_length=255)
-    quantity = models.PositiveIntegerField()
-    unit_price = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    line_item_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
-
-    def save(self, *args, **kwargs):
-        self.line_item_price = self.quantity * self.unit_price
-        super().save(*args, **kwargs)
+    product_name = models.CharField(max_length=100)
 
 
 class OrganizationBilling(BaseModel):
-    PAYMENT_CHOICES=[
-        ('Cash','Cash'),
-        ('Online','Online'),
-    ]
     organization = models.ForeignKey(Organization, related_name='organization_billing', on_delete=models.CASCADE)
-    billing_id = models.AutoField(primary_key=True , editable=False)
-    payment_methode = models.CharField(choices=PAYMENT_CHOICES, max_length=50)
-    total_quantities = models.PositiveIntegerField()
-    total_items = models.PositiveIntegerField()
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    total_tax = models.DecimalField(max_digits=10, decimal_places=2)
-    discount = models.DecimalField(max_digits=10, decimal_places=2)
-    tax_percentage = models.DecimalField(max_digits=5, decimal_places=2)
-    final_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField
-
+    billing_id = models.CharField(max_length=20, unique=True, blank=True)
+    payment_method = models.CharField(choices=PaymentMethodChoices.choices, max_length=50, default=True)
+    total_quantities = models.PositiveIntegerField(default=0)
+    total_items = models.PositiveIntegerField(default=0)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    total_tax = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    discount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    tax_percentage = models.DecimalField(max_digits=5, decimal_places=2,default=0)
+    final_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     gst_number = models.CharField(max_length=15, blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        if self.organization.has_gst_number and not self.gst_number:
-            raise ValueError("GST number is required if organizations have GST number.")
-        elif not self.organization.has_gst_number and self.gst_number:
-            self.gst_number = None
-        super().save(*args, **kwargs)
+    # def generate_billing_id(self):
+    #     random_string = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    #     return f"BILL-{random_string}"
 
-
-class OrganizationPurchaseItem(BaseModel):
-    organization = models.ForeignKey(Organization, related_name='organization_purchases', on_delete=models.CASCADE)
-    product = models.ForeignKey(OrganizationInventory, related_name='product_purchases', on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
-    total_price = models.DecimalField(max_digits=15, decimal_places=2)
-    purchase_date = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        self.total_price = self.purchase_price * self.quantity
-        super().save(*args, **kwargs)
+class OrganizationBillingItem(BaseModel):
+    billing = models.ForeignKey(OrganizationBilling, related_name='billing_items', on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=255)
+    product_quantity = models.PositiveIntegerField(default=0)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    line_item_price = models.DecimalField(max_digits=10, decimal_places=2,default=0)
 
 class OrganizationPurchaseOrder(BaseModel):
-    organization = models.ForeignKey(Organization, related_name='purchase_orders', on_delete=models.CASCADE)
-    purchase_items = models.ManyToManyField(OrganizationPurchaseItem, related_name='purchase_orders')
-    supplier = models.ForeignKey(Supplier,related_name='supplier_name', on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, related_name='organization_purchase_order', on_delete=models.CASCADE)
+    supplier = models.ForeignKey(Supplier, related_name='purchase_orders', on_delete=models.CASCADE)
     purchase_date = models.DateTimeField(auto_now_add=True)
-    payment_method = models.CharField(max_length=50)
-    total_amount_paid = models.DecimalField(max_digits=15, decimal_places=2)
+    payment_method = models.CharField(choices=PaymentMethodChoices.choices, max_length=50, default=True)
+    total_amount_paid = models.DecimalField(max_digits=15, decimal_places=2,default=0)
 
-    def save(self, *args, **kwargs):
-        self.total_amount_paid = sum(item.total_price for item in self.purchase_items.all())
-        super().save(*args, **kwargs)
+class OrganizationPurchaseItem(BaseModel):
+    purchase_order = models.ForeignKey(OrganizationPurchaseOrder, related_name='purchase_items', on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=100)
+    product_quantity = models.PositiveIntegerField(default=0)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    line_item_price = models.DecimalField(max_digits=15, decimal_places=2,default=0)
+
 
 class OrganizationNotification(BaseModel):
     organization = models.ForeignKey(Organization, related_name='organization_notifications', on_delete=models.CASCADE)
     message = models.TextField()
-

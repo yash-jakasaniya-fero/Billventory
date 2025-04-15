@@ -2,16 +2,35 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Organization, OrganizationUser, OrganizationSubscription , OrganizationInventory, OrganizationProduct ,OrganizationBilling, OrganizationBillingItem, OrganizationPurchaseItem, OrganizationPurchaseOrder, OrganizationNotification
-from .serializers import OrganizationCreateSerializer, OrganizationSerializer, OrganizationUserSerializer, OrganizationSubscriptionSerializer,OrganizationInventorySerializer, OrganizationProductSerializer, OrganizationBillingSerializer, OrganizationBillingItemSerializer, OrganizationPurchaseItemSerializer, OrganizationPurchaseOrderSerializer
+from lib.views import BaseView
+
+from .models import Organization, OrganizationUser, OrganizationSubscription, OrganizationInventory, \
+    OrganizationProduct, OrganizationBilling, OrganizationBillingItem, OrganizationPurchaseItem, \
+    OrganizationPurchaseOrder, OrganizationNotification, Supplier
+from .serializers import OrganizationSerializer, OrganizationUserSerializer, OrganizationSubscriptionSerializer, \
+    OrganizationInventorySerializer, OrganizationProductSerializer, OrganizationBillingSerializer, \
+    OrganizationBillingItemSerializer, OrganizationPurchaseItemSerializer, OrganizationPurchaseOrderSerializer, \
+    SupplierSerializer
 
 
-class OrganizationViewSet(viewsets.ModelViewSet):
+class OrganizationViewSet(BaseView):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
+    @action(detail=True, methods=['get'])
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
 
-class OrganizationUserViewSet(viewsets.ModelViewSet):
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class OrganizationUserViewSet(BaseView):
     queryset = OrganizationUser.objects.all()
     serializer_class = OrganizationUserSerializer
 
@@ -19,105 +38,49 @@ class OrganizationSubscriptionsViewSet(viewsets.ModelViewSet):
     queryset = OrganizationSubscription.objects.all()
     serializer_class = OrganizationSubscriptionSerializer
 
-    @action(methods=['post'],detail=False)
-    def upgrade_subscriptions(self, request, pk=None):
-        organization_subscription = self.get_object()
-        new_plan = request.data.get('new_plan')
+class SupplierViewSet(viewsets.ModelViewSet):
+    queryset = Supplier.objects.all()
+    serializer_class = SupplierSerializer
 
-        if new_plan:
-            organization_subscription.plan_name = new_plan
-            organization_subscription.status = 'Active'
-            organization_subscription.save()
-            return Response(OrganizationSubscriptionSerializer(organization_subscription).data)
 
-        return Response({'detail': 'New plan is required.'})
-
-class OrganizationInventoryViewSet(viewsets.ModelViewSet):
+class OrganizationInventoryViewSet(BaseView):
     queryset = OrganizationInventory.objects.all()
     serializer_class = OrganizationInventorySerializer
 
-    @action(methods=['post'],detail=False)
-    def add_product(self, request, pk=None):
-        inventory = self.get_object()
-        product_name = request.data.get('product_name')
-        product = OrganizationProduct.objects.create(organization=inventory.organization, product_name=inventory)
-        return Response(
-            {'message': 'Product added successfully', 'product': OrganizationProductSerializer(product).data})
-
-    @action(methods=['post'],detail=False)
-    def update_inventory(self, request, pk=None):
-        inventory = self.get_object()
-        inventory.quantity_in_stock = request.data.get('quantity_in_stock', inventory.quantity_in_stock)
-        inventory.unit_price = request.data.get('unit_price', inventory.unit_price)
-        inventory.save()
-        return Response(OrganizationInventorySerializer(inventory).data)
-
-class OrganizationProductViewSet(viewsets.ModelViewSet):
+class OrganizationProductViewSet(BaseView):
     queryset = OrganizationProduct.objects.all()
     serializer_class = OrganizationProductSerializer
+
 
 class OrganizationBillingViewSet(viewsets.ModelViewSet):
     queryset = OrganizationBilling.objects.all()
     serializer_class = OrganizationBillingSerializer
 
-    @action(methods=['post'],detail=False)
-    def create_billing_item(self, request, pk=None):
-        billing = self.get_object()
-        serializer = OrganizationBillingItemSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            billing.total_items += 1
-            billing.total_price += serializer.validated_data['line_item_price']
-            billing.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
-
-    @action(methods=['post'],detail=False)
-    def finalize_billing(self, request, pk=None):
-        billing = self.get_object()
-        billing.final_amount = billing.total_price + billing.total_tax - billing.discount
-        billing.save()
-        return Response(OrganizationBillingSerializer(billing).data)
-
-class OrganizationBillingItemViewSet(viewsets.ModelViewSet):
-    queryset = OrganizationBillingItem.objects.all()
-    serializer_class = OrganizationBillingItemSerializer
-
-class OrganizationPurchaseItemViewSet(viewsets.ModelViewSet):
-    queryset = OrganizationPurchaseItem.objects.all()
-    serializer_class = OrganizationPurchaseItemSerializer
-
-    @action(methods=['post'],detail=False)
-    def create_purchase_item(self, request, pk=None):
-        total_price = request.data['purchase_price'] * request.data['quantity']
-        purchase_item = OrganizationPurchaseItem.objects.create(
-            organization_id=request.data['organization'],
-            product_id=request.data['product'],
-            quantity=request.data['quantity'],
-            purchase_price=request.data['purchase_price'],
-            total_price=total_price
-        )
-        return Response(OrganizationPurchaseItemSerializer(purchase_item).data)
+    # def partial_update(self, request, *args, **kwargs):
+    #     kwargs['partial'] = True
+    #     return self.update(request, *args, **kwargs)
+    #
+    # @action(detail=False, methods=['patch'], url_path='update-by-rk-id/(?P<rk_id>[^/.]+)')
+    # def update_by_rk_id(self, request, rk_id=None):
+    #     try:
+    #         billing = OrganizationBilling.objects.get(billing_id=rk_id)
+    #     except OrganizationBilling.DoesNotExist:
+    #         return Response({'detail': 'Billing not found'}, status=status.HTTP_404_NOT_FOUND)
+    #
+    #     serializer = self.get_serializer(billing, data=request.data, partial=True)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_update(serializer)
+    #     return Response(serializer.data)
 
 
-class OrganizationPurchaseOrderViewSet(viewsets.ModelViewSet):
+class OrganizationPurchaseOrderViewSet(BaseView):
     queryset = OrganizationPurchaseOrder.objects.all()
     serializer_class = OrganizationPurchaseOrderSerializer
 
-    @action(detail=True, methods=['post'])
-    def create_purchase_order(self, request, pk=None):
-        organization = self.get_object()
-        purchase_items_data = request.data.get('purchase_items', [])
-        total_amount_paid = sum(item['total_price'] for item in purchase_items_data)
-        purchase_order = OrganizationPurchaseOrder.objects.create(
-            organization=organization,
-            supplier_id=request.data['supplier'],
-            payment_method=request.data['payment_method'],
-            total_amount_paid=total_amount_paid
-        )
-        purchase_order.purchase_items.set(purchase_items_data)
-        for item in purchase_items_data:
-            inventory_item = OrganizationInventory.objects.get(id=item['product'])
-            inventory_item.quantity_in_stock += item['quantity']
-            inventory_item.save()
-        return Response(OrganizationPurchaseOrderSerializer(purchase_order).data)
+class OrganizationBillingItemViewSet(BaseView):
+    queryset = OrganizationBillingItem.objects.all()
+    serializer_class = OrganizationBillingItemSerializer
+
+class OrganizationPurchaseItemViewSet(BaseView):
+    queryset = OrganizationPurchaseItem.objects.all()
+    serializer_class = OrganizationPurchaseItemSerializer
