@@ -1,12 +1,13 @@
 import random
 import string
 from email.policy import default
+from authentication.models import CustomUser
 
 from django.db import models
 import uuid
-from django.contrib.auth.models import User
 from lib.models import BaseModel
 from lib.choices import RoleChoices, StatusChoices, PaymentMethodChoices
+from authentication.models import CustomUser
 
 class OrganizationUser(BaseModel):
     org_user = models.CharField(max_length=100, default=False)
@@ -88,6 +89,8 @@ class OrganizationBillingItem(BaseModel):
 class OrganizationPurchaseOrder(BaseModel):
     organization = models.ForeignKey(Organization, related_name='organization_purchase_order', on_delete=models.CASCADE)
     supplier = models.ForeignKey(Supplier, related_name='purchase_orders', on_delete=models.CASCADE)
+    total_quantities = models.PositiveIntegerField(default=0)
+    total_items = models.PositiveIntegerField(default=0)
     purchase_date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(choices=PaymentMethodChoices.choices, max_length=50, default=True)
     total_amount_paid = models.DecimalField(max_digits=15, decimal_places=2,default=0)

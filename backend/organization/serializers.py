@@ -12,20 +12,21 @@ from .models import Organization, OrganizationUser, OrganizationSubscription, Or
 class OrganizationUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganizationUser
-        fields = ['org_user', 'user_email', 'user_role', 'is_active']
+        fields = ['id','org_user', 'user_email', 'user_role', 'is_active']
+
 
 class OrganizationSerializer(serializers.ModelSerializer):
-    organization_users = OrganizationUserSerializer
-
     class Meta:
         model = Organization
-        fields = ['user','org_id', 'org_name', 'org_address', 'org_logo', 'has_gst_number', 'gst_number']
+        fields = ['org_id', 'user', 'org_name', 'org_address', 'org_logo', 'has_gst_number', 'gst_number']
 
-    def validate(self, attrs):
-        user = attrs.get('user')
-        if Organization.objects.filter(user=user).exists():
+    def validate_user(self, value):
+        if Organization.objects.filter(user=value).exists():
             raise serializers.ValidationError("This user already has an organization.")
-        return attrs
+        return value
+
+    def create(self, validated_data):
+        return Organization.objects.create(**validated_data)
 
 
 class OrganizationSubscriptionSerializer(serializers.ModelSerializer):
@@ -50,7 +51,7 @@ class OrganizationSubscriptionSerializer(serializers.ModelSerializer):
 class SupplierSerializer(serializers.ModelSerializer):
     class Meta:
         model = Supplier
-        fields = ['supplier_code','email','gst_number','name','contact_person','address']
+        fields = ['id','supplier_code','email','gst_number','name','contact_person','address']
 
     def create(self, validated_data):
         if not validated_data.get('supplier_code'):
@@ -68,7 +69,36 @@ class SupplierSerializer(serializers.ModelSerializer):
 class OrganizationInventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganizationInventory
-        fields = ['organization', 'product_name',  'unit_price', 'quantity_in_stock']
+        fields = ['id', 'organization', 'product_name', 'unit_price', 'quantity_in_stock']
+
+    def validate_unit_price(self, value):
+        if value is None or value <= 0:
+            raise serializers.ValidationError("Unit price must be greater than 0.")
+        return value
+
+    def validate_quantity_in_stock(self, value):
+        if value is None or value <= 0:
+            raise serializers.ValidationError("Product quantity must be greater than 0.")
+        return value
+
+    def create(self, validated_data):
+        organization = validated_data.get('organization')
+        product_name = validated_data.get('product_name')
+        unit_price = validated_data.get('unit_price')
+        quantity = validated_data.get('quantity_in_stock')
+
+        existing_item = OrganizationInventory.objects.filter(
+            organization=organization,
+            product_name=product_name
+        ).first()
+
+        if existing_item:
+            existing_item.quantity_in_stock += quantity
+            existing_item.unit_price = unit_price
+            existing_item.save()
+            return existing_item
+        else:
+            return super().create(validated_data)
 
 class OrganizationProductSerializer(serializers.ModelSerializer):
 
@@ -82,6 +112,16 @@ class OrganizationBillingItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganizationBillingItem
         fields = ['product_name', 'product_quantity', 'unit_price', 'line_item_price']
+
+    def validate_product_quantity(self, value):
+        if value is None or value <= 0:
+            raise serializers.ValidationError("Product quantity must be greater than 0.")
+        return value
+
+    def validate_unit_price(self, value):
+        if value is None or value <= 0:
+            raise serializers.ValidationError("Unit price must be greater than 0.")
+        return value
 
 class OrganizationBillingSerializer(serializers.ModelSerializer):
     billing_items = OrganizationBillingItemSerializer(many=True)
@@ -155,17 +195,29 @@ class OrganizationPurchaseItemSerializer(serializers.ModelSerializer):
         model = OrganizationPurchaseItem
         fields = ['product_name', 'product_quantity', 'unit_price', 'line_item_price']
 
+    def validate_product_quantity(self, value):
+        if value is None or value <= 0:
+            raise serializers.ValidationError("Product quantity must be greater than 0.")
+        return value
+
+    def validate_unit_price(self, value):
+        if value is None or value <= 0:
+            raise serializers.ValidationError("Unit price must be greater than 0.")
+        return value
+
 class OrganizationPurchaseOrderSerializer(serializers.ModelSerializer):
     purchase_items = OrganizationPurchaseItemSerializer(many=True)
 
     class Meta:
         model = OrganizationPurchaseOrder
-        fields = ['organization','id','supplier', 'purchase_date', 'payment_method', 'total_amount_paid', 'purchase_items']
+        fields = ['id','organization','total_quantities','total_items','supplier', 'purchase_date', 'payment_method', 'total_amount_paid', 'purchase_items']
         read_only_fields = ['id']
 
     def create(self, validated_data):
-        total_price = 0
         purchase_items_data = validated_data.pop('purchase_items')
+        total_quantities = 0
+        total_items = 0
+        total_price = 0
         purchase_order = OrganizationPurchaseOrder.objects.create(**validated_data)
         organization = validated_data['organization']
         for item_data in purchase_items_data:
@@ -174,6 +226,8 @@ class OrganizationPurchaseOrderSerializer(serializers.ModelSerializer):
             unit_price = item_data['unit_price']
             line_item_price = quantity * unit_price
             item_data['line_item_price'] = line_item_price
+            total_quantities += quantity
+            total_items += 1
             total_price += line_item_price
             try:
                 inventory = OrganizationInventory.objects.get(organization=organization, product_name=product_name)
@@ -190,6 +244,9 @@ class OrganizationPurchaseOrderSerializer(serializers.ModelSerializer):
                 )
             OrganizationPurchaseItem.objects.create(purchase_order=purchase_order, **item_data)
         purchase_order.total_amount_paid = total_price
+        purchase_order.total_quantities = total_quantities
+        purchase_order.total_items = total_items
+        purchase_order.save()
         return purchase_order
 
     # def update(self, instance, validated_data):

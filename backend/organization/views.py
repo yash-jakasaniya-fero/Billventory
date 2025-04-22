@@ -13,21 +13,18 @@ from .serializers import OrganizationSerializer, OrganizationUserSerializer, Org
     SupplierSerializer
 
 
-class OrganizationViewSet(BaseView):
+class OrganizationViewSet(viewsets.ModelViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
-    @action(detail=True, methods=['get'])
-    def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+    def perform_create(self, serializer):
+        serializer.save()
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    @action(detail=False, methods=['get'])
+    def list_organizations(self, request):
+        organizations = Organization.objects.filter(user=request.user)
+        serializer = self.get_serializer(organizations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class OrganizationUserViewSet(BaseView):

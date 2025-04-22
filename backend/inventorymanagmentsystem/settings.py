@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from environ import environ
+
+env = environ.Env()
+env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,13 +38,13 @@ CORS_ALLOWED_ORIGINS = [
 
 #Email Setting
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'yash.jakasaniya@fero.ai'
-EMAIL_HOST_PASSWORD = 'YKJaka4978JhNJDsTY'
+EMAIL_HOST = env.str("EMAIL_HOST", "")
+EMAIL_PORT = env.str("EMAIL_PORT","")
+EMAIL_USE_TLS = env.str("EMAIL_USE_TLS","")
+EMAIL_HOST_USER = env.str("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD","")
 
-
+AUTH_USER_MODEL = 'authentication.CustomUser'
 
 # Application definition
 
@@ -55,6 +60,7 @@ INSTALLED_APPS = [
     'core',
     'rest_framework',
     'django_extensions',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +71,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'inventorymanagmentsystem.urls'
