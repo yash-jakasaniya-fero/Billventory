@@ -1,5 +1,4 @@
 <template>
-    <v-container fluid class="pa-4" :style="{ backgroundColor: colors.background }">
       <v-card :style="{ backgroundColor: colors.card, color: colors.text }">
         <v-card-title class="text-h5 d-flex justify-space-between align-center"
                       :style="{ backgroundColor: colors.header, color: colors.headerText }">
@@ -8,71 +7,53 @@
             Create Purchase-Order
           </v-btn>
         </v-card-title>
-  
-        <v-card class="elevation-1 pa-4" :style="{ backgroundColor: colors.card, color: colors.text }">
-          <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-              <tr>
-                <th style="text-align: left; padding: 8px;">Order ID</th>
-                <th style="text-align: left; padding: 8px;">Supplier</th>
-                <th style="text-align: left; padding: 8px;">Date&Time</th>
-                <th style="text-align: left; padding: 8px;">Payment Method</th>
-                <th style="text-align: left; padding: 8px;">Total Amount</th>
-                <th style="text-align: left; padding: 8px;">Items</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in purchaseorderList" :key="item.id">
-                <td style="padding: 8px;">{{ item.id }}</td>
-                <td style="padding: 8px;">{{ item.supplier }}</td>
-                <td style="padding: 8px;">{{ item.purchase_date }}</td>
-                <td style="padding: 8px;">{{ item.payment_method }}</td>
-                <td style="padding: 8px;">₹ {{ item.total_amount_paid }}</td>
-                <td style="padding: 8px;">
-                  <v-btn style="background-color: #333; color: #00BFFF; border: 2px solid #00BFFF;"
-                         @click="openModal(item.purchase_items)">
-                    View Purchase Items
-                  </v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+
+        <!-- Purchase Orders Table -->
+      <v-data-table
+        :headers="tableHeaders"
+        :items="purchaseorderList"
+        item-value="id"
+        class="elevation-1"
+        :style="{ backgroundColor: colors.card, color: colors.text }"
+      >
+        <template #item.total_amount_paid="{ item }">
+          ₹ {{ item.total_amount_paid }}
+        </template>
+
+        <template #item.purchase_items="{ item }">
+          <v-btn
+            style="background-color: #333; color: #00BFFF; border: 2px solid #00BFFF;"
+            @click="openModal(item.purchase_items)"
+          >
+            View Purchase Items
+          </v-btn>
+        </template>
+      </v-data-table>
+
+      <!-- Purchase Items Dialog -->
+      <v-dialog v-model="ListDialogVisible" max-width="800px">
+        <v-card :style="{ backgroundColor: colors.card, color: colors.text }">
+          <v-card-title :style="{ backgroundColor: colors.header, color: colors.headerText }">
+            Purchase Items
+          </v-card-title>
+          <v-card-text>
+            <v-data-table
+              :headers="header"
+              :items="purchasemodalItems"
+              dense
+              class="my-4"
+              hide-default-footer
+            />   
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="ListDialogVisible = false" color="secondary">Close</v-btn>
+          </v-card-actions>
         </v-card>
-  
-        <!-- Purchase Items Dialog -->
-        <v-dialog v-model="dialogVisible" max-width="800px">
-          <v-card :style="{ backgroundColor: colors.card, color: colors.text }">
-            <v-card-title class="text-h5" :style="{ backgroundColor: colors.header, color: colors.headerText }">
-              Purchase Items
-            </v-card-title>
-            <v-card-text>
-              <v-simple-table dense class="my-4">
-                <thead class="bg-[#800020] text-[#E8E8E8]">
-                  <tr>
-                    <th class="px-4 py-2">Product</th>
-                    <th class="px-4 py-2">Quantity</th>
-                    <th class="px-4 py-2">Unit Price</th>
-                    <th class="px-4 py-2">Line Item Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(prod, index) in modalItems" :key="index" class="hover:bg-[#E8E8E8]">
-                    <td class="border px-4 py-2">{{ prod.product_name }}</td>
-                    <td class="border px-4 py-2">{{ prod.product_quantity }}</td>
-                    <td class="border px-4 py-2">{{ prod.unit_price }}</td>
-                    <td class="border px-4 py-2">{{ prod.line_item_price }}</td>
-                  </tr>
-                </tbody>
-              </v-simple-table>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn @click="dialogVisible = false" color="secondary">Close</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+      </v-dialog>
   
         <!-- Create Purchase Order Dialog -->
-        <v-dialog v-model="createDialogVisible" max-width="900px">
+        <v-dialog v-model="createpurchaseDialogVisible" max-width="900px">
           <v-card :style="{ backgroundColor: colors.card, color: colors.text }">
             <v-card-title class="text-h5" :style="{ backgroundColor: colors.header, color: colors.headerText }">
               Create Purchase Order
@@ -126,39 +107,37 @@
         </v-dialog>
   
       </v-card>
-    </v-container>
   </template>
   
   <script setup>
   import { ref, onMounted } from 'vue'
   import axios from 'axios'
   
-  const organizationName = ref('Purchase Order List')
-  const dialogVisible = ref(false)
-  const createDialogVisible = ref(false)
-  const modalItems = ref([])
-  const purchaseorderList = ref([])
+const organizationName = ref('Purchase Order List')
+const ListDialogVisible = ref(false)
+const createpurchaseDialogVisible = ref(false)
+const purchasemodalItems = ref([])
+const purchaseorderList = ref([])
+
+const colors = {
+  card: '#FFF5E5',
+  text: '#0C0F0A',
+  header: '#D7CFFF',
+  headerText: '#7C6DD4'
+}
   
-  const colors = {
-    background: '#0C0F0A',
-    card: '#E8E8E8',
-    text: '#0C0F0A',
-    header: '#800020',
-    headerText: '#E8E8E8'
-  }
-  
-  const fetchInventory = async () => {
+  const fetchPurchaseorder = async () => {
     const response = await axios.get('http://127.0.0.1:8000/api/v1/purchase-orders/')
     purchaseorderList.value = response.data
   }
   
-  onMounted(() => {
-    fetchInventory()
+  onMounted(() =>{
+    fetchPurchaseorder()
   })
-  
+
   function openModal(purchaseItems) {
-    modalItems.value = purchaseItems
-    dialogVisible.value = true
+    purchasemodalItems.value = purchaseItems
+    ListDialogVisible.value = true
   }
   
   const newOrder = ref({
@@ -169,7 +148,7 @@
   })
   
   function openAddDialog() {
-    createDialogVisible.value = true
+    createpurchaseDialogVisible.value = true
   }
   
   function addItem() {
@@ -181,7 +160,7 @@
   }
   
   function cancelOrder() {
-    createDialogVisible.value = false
+    createpurchaseDialogVisible.value = false
     resetForm()
   }
   
@@ -215,8 +194,8 @@
   
     try {
       await axios.post('http://127.0.0.1:8000/api/v1/purchase-orders/', payload)
-      fetchInventory()
-      createDialogVisible.value = false
+      fetchPurchaseorder()
+      createpurchaseDialogVisible.value = false
       resetForm()
     } catch (error) {
       console.error('Failed to submit order:', error)
