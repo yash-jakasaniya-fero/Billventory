@@ -283,3 +283,8 @@
     </v-row>
   </v-container>
 </template>
+
+<script setup>
+import { ref } from "vue";
+const billingInterval = ref("monthly");
+</script>
