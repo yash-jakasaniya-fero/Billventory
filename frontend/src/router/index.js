@@ -1,26 +1,68 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import DashboardView from '../views/DashboardView.vue'
-import InventoryView from '../views/InventoryView.vue'
-import PurchaseOrderView from '../views/PurchaseOrderView.vue'
-import SalesOrderView from '../views/SalesOrderView.vue'
-import SupplierView from '../views/SupplierView.vue'
-import SubscriptionView from '../views/SubscriptionView.vue'
-import LoginView from '@/pages/LoginView.vue'
-import RegisterView from '@/pages/RegisterView.vue'
-import VerificationView from '@/pages/VerificationView.vue'
+import AuthLayout from '@/layouts/AuthLayout.vue'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import HomePageLayout from '@/layouts/HomePageLayout.vue'
+
 
 const routes = [
-  { path: '/', redirect: '/login' },
-  { path: '/dashboard', component: DashboardView },
-  { path: '/inventory', component: InventoryView },
-  { path: '/purchase-order', component: PurchaseOrderView },
-  { path: '/sales-order', component: SalesOrderView },
-  { path: '/supplier', component: SupplierView },
-  { path: '/subscription', component: SubscriptionView },
-  { path: '/login', component: LoginView },
-  { path: '/register', component: RegisterView },
-  { path: '/verification', component: VerificationView }
+  // Landing Page
+  {
+    path: '/',
+    component: HomePageLayout,
+    children: [
+      {
+        path: '',
+        name: 'HomePage',
+        component: () => import('@/views/HomePage.vue'),
+        meta: { requiresAuth: false, title: 'Welcome' },
+      },
+      {
+        path: '/about',
+        name: 'About Us',
+        component: () => import('@/views/AboutUs.vue'),
+        meta: { requiresAuth: false, title: 'About Us' },
+      },
+      {
+        path: '/subscriptions',
+        name: 'Subscriptions',
+        component: () => import('@/views/Subscription.vue'),
+        meta: { requiresAuth: false, title: 'Subscriptions' },
+      },
+    ],
+  },
+  // Auth Pages
+  {
+    path: '/auth',
+    component: HomePageLayout,
+    children: [
+      {
+        path: 'login',
+        name: 'Login',
+        component: () => import('@/views/Login.vue'),
+        meta: { requiresAuth: false, title: 'Login' },
+      },
+      {
+        path: 'register',
+        name: 'Register',
+        component: () => import('@/views/Register.vue'),
+        meta: { requiresAuth: false, title: 'Register' },
+      },
+    ],
+  },
+  // Authenticated Pages
+  {
+    path: '/dashboard',
+    component: DefaultLayout,
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: () => import('@/pages/DashboardView.vue'),
+        meta: { requiresAuth: true, title: 'Dashboard' },
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
