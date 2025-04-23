@@ -60,8 +60,14 @@
                 >/{{ billingInterval === "monthly" ? "mo" : "yr" }}</span
               >
             </div>
-            <v-btn block color="green" size="large" class="mb-6">
-              Start your trial
+            <v-btn
+              block
+              color="green"
+              size="large"
+              class="mb-6"
+              @click="$router.push({ name: 'Register' })"
+            >
+              Get Started
             </v-btn>
             <h3 class="text-subtitle-1 font-weight-bold mb-4">
               What's included
@@ -116,8 +122,14 @@
                 >/{{ billingInterval === "monthly" ? "mo" : "yr" }}</span
               >
             </div>
-            <v-btn block color="green" size="large" class="mb-6">
-              Start your trial
+            <v-btn
+              block
+              color="green"
+              size="large"
+              class="mb-6"
+              @click="$router.push({ name: 'Register' })"
+            >
+              Get Started
             </v-btn>
             <h3 class="text-subtitle-1 font-weight-bold mb-4">
               What's included
@@ -173,7 +185,13 @@
                 >/{{ billingInterval === "monthly" ? "mo" : "yr" }}</span
               >
             </div>
-            <v-btn block color="green" size="large" class="mb-6">
+            <v-btn
+              @click="$router.push({ name: 'Contact' })"
+              block
+              color="green"
+              size="large"
+              class="mb-6"
+            >
               Contact sales
             </v-btn>
             <h3 class="text-subtitle-1 font-weight-bold mb-4">

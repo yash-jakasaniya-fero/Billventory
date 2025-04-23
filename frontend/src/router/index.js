@@ -33,6 +33,12 @@ const routes = [
         name: "ThankYou",
         component: () => import("@/views/ThankYou.vue"),
       },
+      {
+        path: "/contact",
+        name: "Contact",
+        component: () => import("@/views/ContactUs.vue"),
+        meta: { requiresAuth: false, title: "Contact Us" },
+      },
     ],
   },
   // Auth Pages

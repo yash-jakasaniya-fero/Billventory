@@ -1,92 +1,81 @@
 <template>
-  <div>
-    <v-img class="mx-auto my-6" max-width="228" src="/App_logo.ico"></v-img>
+  <v-container class="d-flex align-center justify-center fill-height">
+    <v-card elevation="3" class="pa-6">
+      <v-card-title class="text-h5 font-weight-bold mb-2">Login</v-card-title>
 
-    <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
-      <div class="text-subtitle-1 text-medium-emphasis">Account</div>
+      <v-card-text>
+        <v-form @submit.prevent="login">
+          <v-text-field
+            v-model="form.email"
+            label="Email"
+            type="email"
+            required
+            prepend-inner-icon="mdi-email"
+          />
+          <v-text-field
+            v-model="form.password"
+            label="Password"
+            type="password"
+            required
+            prepend-inner-icon="mdi-lock"
+          />
+          <v-btn type="submit" color="green" class="mt-4" block> Login </v-btn>
 
-      <v-text-field
-        v-model="email"
-        density="compact"
-        placeholder="Email address"
-        prepend-inner-icon="mdi-email-outline"
-        variant="outlined"
-      ></v-text-field>
-
-      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-        Password
-      </div>
-
-      <v-text-field
-        v-model="password"
-        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="visible ? 'text' : 'password'"
-        density="compact"
-        placeholder="Enter your password"
-        prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        @click:append-inner="visible = !visible"
-      ></v-text-field>
-
-      <v-card class="mb-12" color="surface-variant" variant="tonal"></v-card>
-
-      <v-btn
-        class="mb-8"
-        color="#0C0F0A"
-        size="large"
-        variant="tonal"
-        block
-        @click="handleLogin"
-      >
-        Log In
-      </v-btn>
-
-      <v-card-text class="text-center">
-        <router-link to="/verification" class="text-blue text-decoration-none">
-          No Account...!Sign up now <v-icon icon="mdi-chevron-right"></v-icon>
-        </router-link>
+          <v-alert
+            v-if="error"
+            type="error"
+            class="mt-4"
+            border="start"
+            color="red-lighten-4"
+          >
+            {{ error }}
+          </v-alert>
+        </v-form>
       </v-card-text>
-    </v-card>
 
-    <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="2000">
-      {{ snackbarMessage }}
-    </v-snackbar>
-  </div>
+      <v-card-actions class="justify-center">
+        <router-link
+          :to="{ name: 'Register' }"
+          class="text-green text-decoration-none"
+        >
+          Don’t have an account? Register
+        </router-link>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
-const visible = ref(false)
+const router = useRouter();
+const form = ref({
+  email: "",
+  password: "",
+});
+const error = ref("");
 
-const email = ref('')
-const password = ref('')
-
-const snackbar = ref(false)
-const snackbarMessage = ref('')
-const snackbarColor = ref('success')
-
-const handleLogin = async () => {
+const login = async () => {
   try {
-    await axios.post('http://127.0.0.1:8000/api/v1/auth/login/', {
-      email: email.value,
-      password: password.value
-    })
+    const res = await fetch("http://127.0.0.1:8000/api/v1/login/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form.value),
+    });
 
-    snackbarMessage.value = 'Login successful! Redirecting...'
-    snackbarColor.value = 'success'
-    snackbar.value = true
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Login failed");
 
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 1500)
-  } catch (error) {
-    snackbarMessage.value = error.response?.data?.message || 'Login failed!'
-    snackbarColor.value = 'error'
-    snackbar.value = true
+    error.value = "";
+
+    // Store user data in localStorage
+    localStorage.setItem("user", JSON.stringify(data.user)); // Save user data
+
+    // Redirect to Dashboard
+    router.push({ name: "Dashboard" }); // Replace with your dashboard route name
+  } catch (err) {
+    error.value = err.message;
   }
-}
+};
 </script>

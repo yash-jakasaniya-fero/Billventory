@@ -24,6 +24,7 @@
                     class="mb-3 mb-sm-0 mr-sm-3"
                     size="large"
                     variant="flat"
+                    @click="$router.push({ name: 'Register' })"
                   >
                     Get started
                   </v-btn>
@@ -32,8 +33,9 @@
                     class="bg-primary-50 text-green-700"
                     size="large"
                     variant="outlined"
+                    @click="$router.push({ name: 'Contact' })"
                   >
-                    Live demo
+                    Contact Us
                   </v-btn>
                 </div>
               </v-col>

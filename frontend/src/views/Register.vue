@@ -1,6 +1,6 @@
 <template>
-  <v-container class="py-10" max-width="600px">
-    <v-row justify="center">
+  <v-container class="py-10 mt-10" >
+    <v-row justify="center" flat>
       <v-col cols="12">
         <v-stepper alt-labels v-model="step" class="custom-stepper">
           <v-stepper-header>
@@ -89,10 +89,6 @@
                   label="Organization Address"
                 />
                 <v-text-field v-model="form.gst_number" label="GST Number" />
-                <v-text-field
-                  v-model="form.organization"
-                  label="Organization ID"
-                />
 
                 <v-btn color="success" class="mt-4" @click="submitForm">
                   Submit

@@ -4,13 +4,13 @@
       <v-list-item class="justify-center">
         <!-- <img src="/App_logo.ico" style="width: 200px;" /> -->
       </v-list-item>
-      <div class="d-flex align-center">
+      <div class="d-flex align-center" >
         <v-icon
           icon="mdi-package-variant-closed"
           class="mr-2 text-green-700"
-          size="32"
+          size="32" @click="$router.push({ name: 'HomePage' })"
         ></v-icon>
-        <span class="font-weight-bold text-green-700 text-xl"
+        <span class="font-weight-bold text-green-700 text-xl" @click="$router.push({ name: 'HomePage' })"
           >BillInventory</span
         >
       </div>
@@ -31,6 +31,12 @@
         <v-btn text class="btn-link" elevation="0">Subscriptions</v-btn>
       </router-link>
       <router-link
+        :to="{ name: 'Contact' }"
+        class="text-green-700 text-decoration-none"
+      >
+        <v-btn text class="btn-link" elevation="0">Contact Us</v-btn>
+      </router-link>
+      <router-link
         :to="{ name: 'Login' }"
         class="text-green-700 text-decoration-none"
       >
@@ -46,7 +52,7 @@
       </router-link>
     </v-app-bar>
 
-    <v-main class="pa-0 mt-10">
+    <v-main class="pa-0 mt-15">
       <router-view />
     </v-main>
     <!-- CTA Section -->
@@ -65,10 +71,20 @@
           md="5"
           class="d-flex flex-column flex-sm-row justify-md-end mt-4 mt-md-0"
         >
-          <v-btn color="white" class="mr-sm-4 mb-4 mb-sm-0">
+          <v-btn
+            color="white"
+            @click="$router.push({ name: 'Register' })"
+            class="mr-sm-4 mb-4 mb-sm-0"
+          >
             Get started
           </v-btn>
-          <v-btn variant="outlined" color="white"> Contact sales </v-btn>
+          <v-btn
+            @click="$router.push({ name: 'Contact' })"
+            variant="outlined"
+            color="white"
+          >
+            Contact sales
+          </v-btn>
         </v-col>
       </v-row>
     </v-container>
