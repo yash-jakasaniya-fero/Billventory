@@ -1,9 +1,9 @@
 <template>
   <!-- Pricing Header -->
-  <v-container class="py-16">
+  <v-container class="pa-16 text-green-600">
     <v-row justify="center">
       <v-col cols="12" md="8" class="text-center">
-        <span class="text-uppercase text-primary font-weight-medium">Pricing</span>
+        <span class="text-uppercase text-green-600 font-weight-medium">Pricing</span>
         <h1 class="text-h3 font-weight-bold mt-2 mb-4">
           Take control of your business
         </h1>
@@ -18,7 +18,7 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" md="8" lg="6" class="text-center">
-        <v-btn-toggle v-model="billingInterval" color="primary" mandatory rounded="pill" density="comfortable">
+        <v-btn-toggle v-model="billingInterval" color="green" mandatory rounded="pill" density="comfortable">
           <v-btn value="monthly">Monthly</v-btn>
           <v-btn value="annual">Annual <span class="text-primary-darken-2">(-20%)</span></v-btn>
         </v-btn-toggle>
@@ -43,7 +43,7 @@
               {{ billingInterval === 'monthly' ? '$29' : '$279' }}
               <span class="text-body-1 font-weight-regular">/{{ billingInterval === 'monthly' ? 'mo' : 'yr' }}</span>
             </div>
-            <v-btn block color="primary" size="large" class="mb-6">
+            <v-btn block color="green" size="large" class="mb-6">
               Start your trial
             </v-btn>
             <h3 class="text-subtitle-1 font-weight-bold mb-4">What's included</h3>
@@ -61,8 +61,8 @@
       <v-col cols="12" md="4">
         <v-card class="h-100" color="primary-lighten-5" variant="outlined" border>
           <v-card-item>
-            <div class="position-absolute" style="top: -12px; right: 24px;">
-              <v-chip color="primary" label>Most Popular</v-chip>
+            <div class="position-absolute" style="top: 10px; right: 24px;">
+              <v-chip color="green" label>Most Popular</v-chip>
             </div>
             <v-card-title class="text-h5">Professional</v-card-title>
             <v-card-subtitle>
@@ -74,7 +74,7 @@
               {{ billingInterval === 'monthly' ? '$79' : '$759' }}
               <span class="text-body-1 font-weight-regular">/{{ billingInterval === 'monthly' ? 'mo' : 'yr' }}</span>
             </div>
-            <v-btn block color="primary" size="large" class="mb-6">
+            <v-btn block color="green" size="large" class="mb-6">
               Start your trial
             </v-btn>
             <h3 class="text-subtitle-1 font-weight-bold mb-4">What's included</h3>
@@ -104,7 +104,7 @@
               {{ billingInterval === 'monthly' ? '$199' : '$1,919' }}
               <span class="text-body-1 font-weight-regular">/{{ billingInterval === 'monthly' ? 'mo' : 'yr' }}</span>
             </div>
-            <v-btn block color="primary" size="large" class="mb-6">
+            <v-btn block color="green" size="large" class="mb-6">
               Contact sales
             </v-btn>
             <h3 class="text-subtitle-1 font-weight-bold mb-4">What's included</h3>

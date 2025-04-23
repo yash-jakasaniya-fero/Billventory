@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="pa-10">
     <v-app-bar app fixed flat height="75" class="shared-bar border">
       <v-list-item class="justify-center">
         <!-- <img src="/App_logo.ico" style="width: 200px;" /> -->

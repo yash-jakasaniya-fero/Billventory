@@ -117,7 +117,7 @@
     <v-container fluid class="py-12 bg-primary-lighten-5">
         <v-row justify="center">
             <v-col cols="12" md="10" lg="8" class="text-center">
-                <span class="text-uppercase text-primary font-weight-medium">Our Team</span>
+                <span class="text-uppercase text-green-600 font-weight-medium">Our Team</span>
                 <h2 class="text-h4 font-weight-bold mt-2 mb-3">
                     The people behind Billventory
                 </h2>
@@ -198,8 +198,8 @@
                 <v-list>
                     <v-list-item>
                         <template v-slot:prepend>
-                            <v-avatar color="primary" rounded>
-                                <v-icon icon="mdi-flash" color="text-green-600"></v-icon>
+                            <v-avatar color="green" rounded>
+                                <v-icon icon="mdi-flash"></v-icon>
                             </v-avatar>
                         </template>
                         <v-list-item-title class="text-h6">Lightning Fast Performance</v-list-item-title>
@@ -215,7 +215,7 @@
                 <v-list>
                     <v-list-item>
                         <template v-slot:prepend>
-                            <v-avatar color="primary" rounded>
+                            <v-avatar color="green" rounded>
                                 <v-icon icon="mdi-shield" color="text-green-600"></v-icon>
                             </v-avatar>
                         </template>
@@ -233,7 +233,7 @@
                 <v-list>
                     <v-list-item>
                         <template v-slot:prepend>
-                            <v-avatar color="primary" rounded>
+                            <v-avatar color="green" rounded>
                                 <v-icon icon="mdi-cellphone" color="white"></v-icon>
                             </v-avatar>
                         </template>
@@ -250,7 +250,7 @@
                 <v-list>
                     <v-list-item>
                         <template v-slot:prepend>
-                            <v-avatar color="primary" rounded>
+                            <v-avatar color="green" rounded>
                                 <v-icon icon="mdi-headphones" color="white"></v-icon>
                             </v-avatar>
                         </template>
