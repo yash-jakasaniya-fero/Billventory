@@ -190,11 +190,11 @@ const submitForm = async () => {
 
     error.value = "";
     // Redirect to thank-you page
-    router.push("/thank-you");
+    router.push({ name: "ThankYou" });
 
     // Wait for 10 seconds, then go to login
     setTimeout(() => {
-      router.push("/login");
+      router.push({ name: "Login" });
     }, 10000);
   } catch (err) {
     error.value = err.message;
