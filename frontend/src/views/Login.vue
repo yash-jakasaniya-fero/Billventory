@@ -61,19 +61,19 @@ const error = ref("");
 
 const login = async () => {
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/v1/login/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form.value),
-    });
+    // const res = await fetch("http://127.0.0.1:8000/api/v1/login/", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(form.value),
+    // });
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || "Login failed");
+    // const data = await res.json();
+    // if (!res.ok) throw new Error(data.detail || "Login failed");
 
-    error.value = "";
+    // error.value = "";
 
     // Store user data in localStorage
-    localStorage.setItem("user", JSON.stringify(data.user)); // Save user data
+    // localStorage.setItem("user", JSON.stringify(data.user)); // Save user data
 
     // Redirect to Dashboard
     router.push({ name: "Dashboard" }); // Replace with your dashboard route name
