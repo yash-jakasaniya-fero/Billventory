@@ -113,6 +113,10 @@
 <script setup>
 import { ref, reactive } from "vue";
 
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
 const step = ref(1);
 const email = ref("");
 const otp = ref("");
@@ -185,7 +189,13 @@ const submitForm = async () => {
     if (!res.ok) throw new Error(data.detail || "Submission failed");
 
     error.value = "";
-    alert("Successfully submitted!");
+    // Redirect to thank-you page
+    router.push("/thank-you");
+
+    // Wait for 10 seconds, then go to login
+    setTimeout(() => {
+      router.push("/login");
+    }, 10000);
   } catch (err) {
     error.value = err.message;
   }
