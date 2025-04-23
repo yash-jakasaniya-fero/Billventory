@@ -114,7 +114,7 @@
     </v-container>
 
     <!-- Team Section -->
-    <v-container fluid class="py-12 bg-primary-lighten-5">
+    <v-container fluid class="py-12 bg-green-lighten-5">
         <v-row justify="center">
             <v-col cols="12" md="10" lg="8" class="text-center">
                 <span class="text-uppercase text-green-600 font-weight-medium">Our Team</span>

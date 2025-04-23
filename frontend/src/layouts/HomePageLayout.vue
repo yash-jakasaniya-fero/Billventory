@@ -1,33 +1,52 @@
 <template>
-  <v-app class="pa-10">
+  <v-app>
     <v-app-bar app fixed flat height="75" class="shared-bar border">
       <v-list-item class="justify-center">
         <!-- <img src="/App_logo.ico" style="width: 200px;" /> -->
-
       </v-list-item>
       <div class="d-flex align-center">
-        <v-icon icon="mdi-package-variant-closed" class="mr-2 text-green-700" size="32"></v-icon>
-        <span class="font-weight-bold text-green-700 text-xl">BillInventory</span>
+        <v-icon
+          icon="mdi-package-variant-closed"
+          class="mr-2 text-green-700"
+          size="32"
+        ></v-icon>
+        <span class="font-weight-bold text-green-700 text-xl"
+          >BillInventory</span
+        >
       </div>
       <v-spacer></v-spacer>
       <router-link to="/" class="text-green-700 text-decoration-none">
         <v-btn text class="btn-link" elevation="0">Home</v-btn>
       </router-link>
-      <router-link :to="{ name: 'About Us' }" class="text-green-700 text-decoration-none">
+      <router-link
+        :to="{ name: 'About Us' }"
+        class="text-green-700 text-decoration-none"
+      >
         <v-btn text class="btn-link" elevation="0">About Us</v-btn>
       </router-link>
-      <router-link :to="{ name: 'Subscriptions' }" class="text-green-700 text-decoration-none">
+      <router-link
+        :to="{ name: 'Subscriptions' }"
+        class="text-green-700 text-decoration-none"
+      >
         <v-btn text class="btn-link" elevation="0">Subscriptions</v-btn>
       </router-link>
-      <router-link :to="{ name: 'Login' }" class="text-green-700 text-decoration-none">
-        <v-btn text class="btn-link mr-2" color="green" variant="elevated">Login</v-btn>
+      <router-link
+        :to="{ name: 'Login' }"
+        class="text-green-700 text-decoration-none"
+      >
+        <v-btn text class="btn-link mr-2" color="green" variant="elevated"
+          >Login</v-btn
+        >
       </router-link>
-      <router-link :to="{ name: 'Register' }" class="text-green-700 text-decoration-none">
+      <router-link
+        :to="{ name: 'Register' }"
+        class="text-green-700 text-decoration-none"
+      >
         <v-btn text class="btn-link mr-2" variant="outlined">Register</v-btn>
       </router-link>
     </v-app-bar>
 
-    <v-main class="pa-0 ma-0">
+    <v-main class="pa-0 mt-10">
       <router-view />
     </v-main>
     <!-- CTA Section -->
@@ -35,27 +54,34 @@
       <v-row align="center" justify="space-between" class="pa-5">
         <v-col cols="12" md="7">
           <h2 class="text-h4 font-weight-bold text-white mb-2">
-            Ready to transform your business?
+            Ready to streamline your business?
           </h2>
           <p class="text-h6 text-white-lighten-2">
-            Join thousands of satisfied customers today.
+            Enhance your journey with us today !
           </p>
         </v-col>
-        <v-col cols="12" md="5" class="d-flex flex-column flex-sm-row justify-md-end mt-4 mt-md-0">
+        <v-col
+          cols="12"
+          md="5"
+          class="d-flex flex-column flex-sm-row justify-md-end mt-4 mt-md-0"
+        >
           <v-btn color="white" class="mr-sm-4 mb-4 mb-sm-0">
             Get started
           </v-btn>
-          <v-btn variant="outlined" color="white">
-            Contact sales
-          </v-btn>
+          <v-btn variant="outlined" color="white"> Contact sales </v-btn>
         </v-col>
       </v-row>
     </v-container>
-    <v-footer app fixed height="75" class="shared-bar d-flex justify-space-between border">
+    <v-footer
+      app
+      fixed
+      height="75"
+      class="shared-bar d-flex justify-space-between border"
+    >
       <div class="text-subtitle-2 text-green-700">
         © {{ currentYear }} Billventory. All rights reserved.
       </div>
-      <div class="pa-1 ga-1 ">
+      <div class="pa-1 ga-1">
         <v-btn icon variant="text">
           <v-icon>mdi-facebook</v-icon>
         </v-btn>
@@ -74,7 +100,7 @@
 </template>
 
 <script setup>
-const currentYear = new Date().getFullYear()
+const currentYear = new Date().getFullYear();
 </script>
 
 <style>
@@ -145,7 +171,7 @@ const currentYear = new Date().getFullYear()
 }
 */
 .btn-link {
-  color: #7C6DD4;
+  color: #7c6dd4;
   font-weight: 600;
   font-size: 16px;
   transition: all 0.2s ease;
