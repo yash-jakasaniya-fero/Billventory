@@ -1,6 +1,9 @@
 <template>
-  <v-container class="d-flex align-center justify-center fill-height">
-    <v-card elevation="3" class="pa-6">
+  <v-container
+    class="d-block align-center justify-center fill-height mt-15"
+    max-width="500"
+  >
+    <v-card class="pa-6 border" elevation="o">
       <v-card-title class="text-h5 font-weight-bold mb-2">Login</v-card-title>
 
       <v-card-text>

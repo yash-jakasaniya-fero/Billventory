@@ -7,11 +7,11 @@
       <div class="d-flex align-center" >
         <v-icon
           icon="mdi-package-variant-closed"
-          class="mr-2 text-green-700"
+          class="mr-2"
           size="32" @click="$router.push({ name: 'HomePage' })"
         ></v-icon>
         <span class="font-weight-bold text-green-700 text-xl" @click="$router.push({ name: 'HomePage' })"
-          >BillInventory</span
+          >Billventory</span
         >
       </div>
       <v-spacer></v-spacer>
