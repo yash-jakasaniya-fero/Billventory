@@ -1,122 +1,201 @@
 <template>
-  <div>
-    <v-img class="mx-auto my-6" max-width="228" src="/App_logo.ico"></v-img>
+  <v-container class="py-10" max-width="600px">
+    <v-row justify="center">
+      <v-col cols="12">
+        <v-stepper alt-labels v-model="step" class="custom-stepper">
+          <v-stepper-header>
+            <v-stepper-item :complete="step > 1" :value="1" color="success">
+              Email Details
+            </v-stepper-item>
+            <v-divider></v-divider>
+            <v-stepper-item :complete="step > 2" :value="2" color="success">
+              Verification
+            </v-stepper-item>
+            <v-divider></v-divider>
+            <v-stepper-item :value="3"> Organization Details </v-stepper-item>
+          </v-stepper-header>
 
-    <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
-      <div class="text-subtitle-1 text-medium-emphasis">Email Address</div>
-      <v-text-field
-        v-model="email"
-        density="compact"
-        placeholder="Email address"
-        prepend-inner-icon="mdi-email-outline"
-        variant="outlined"
-      ></v-text-field>
+          <v-stepper-window>
+            <!-- Step 1 -->
+            <v-stepper-window-item :value="1">
+              <v-card flat class="pa-6">
+                <v-card-title class="text-h6">Step 1: Enter Email</v-card-title>
+                <v-text-field
+                  v-model="email"
+                  label="Email"
+                  type="email"
+                  required
+                />
+                <v-btn color="success" @click="sendOtp">Send OTP</v-btn>
 
-      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-        Password
-      </div>
-      <v-text-field
-        v-model="password"
-        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="visible ? 'text' : 'password'"
-        density="compact"
-        placeholder="Enter your password"
-        prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        @click:append-inner="visible = !visible"
-      ></v-text-field>
+                <v-alert v-if="error" type="error" class="mt-3">
+                  {{ error }}
+                </v-alert>
 
-      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-        Confirm Password
-      </div>
-      <v-text-field
-        v-model="confirmPassword"
-        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="visible ? 'text' : 'password'"
-        density="compact"
-        placeholder="Confirm your password"
-        prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        @click:append-inner="visible = !visible"
-      ></v-text-field>
+                <v-snackbar v-model="snackbar" :timeout="5000" color="success">
+                  {{ snackbarMessage }}
+                </v-snackbar>
+              </v-card>
+            </v-stepper-window-item>
 
-      <v-card class="mb-12" color="surface-variant" variant="tonal"></v-card>
+            <!-- Step 2 -->
+            <v-stepper-window-item :value="2">
+              <v-card flat class="pa-6">
+                <v-card-title class="text-h6">Step 2: Verify OTP</v-card-title>
 
-      <h3 class="text-h5">Verification Code</h3>
-      <div class="text-subtitle-2 font-weight-light mb-3">
-        Please enter the verification code sent to your Email
-      </div>
+                <div class="d-flex justify-space-between mt-4 mb-4">
+                  <v-text-field
+                    v-model="otp"
+                    label="Enter OTP"
+                    maxlength="6"
+                    hide-details
+                    class="otp-input"
+                  ></v-text-field>
+                </div>
 
-      <v-sheet color="surface">
-      <v-otp-input
-        v-model="otp"
-        type="password"
-        variant="solo"
-        color="grey"
-      ></v-otp-input>
-    </v-sheet>
+                <v-btn color="success" @click="verifyOtp">Verify</v-btn>
 
-      <v-btn
-        class="mb-8"
-        color="#0C0F0A"
-        size="large"
-        variant="tonal"
-        block
-        @click="handleRegister"
-      >
-        Sign up
-      </v-btn>
+                <v-alert v-if="error" type="error" class="mt-3">
+                  {{ error }}
+                </v-alert>
 
-      <v-card-text class="text-center">
-        <router-link to="/login" class="text-blue text-decoration-none">
-          Already Have Account? Log in <v-icon icon="mdi-chevron-right"></v-icon>
-        </router-link>
-      </v-card-text>
-    </v-card>
+                <v-dialog v-model="otpSuccess" max-width="300">
+                  <v-card>
+                    <v-card-text class="text-center">
+                      ✅ OTP Verified Successfully!
+                    </v-card-text>
+                  </v-card>
+                </v-dialog>
+              </v-card>
+            </v-stepper-window-item>
 
-    <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="50">
-      {{ snackbarMessage }}
-    </v-snackbar>
-  </div>
+            <!-- Step 3 -->
+            <v-stepper-window-item :value="3">
+              <v-card flat class="pa-6">
+                <v-card-title class="text-h6"
+                  >Step 3: Organization Details</v-card-title
+                >
+                <v-text-field
+                  v-model="form.user_first_name"
+                  label="First Name"
+                />
+                <v-text-field v-model="form.user_last_name" label="Last Name" />
+                <v-text-field
+                  v-model="form.org_name"
+                  label="Organization Name"
+                />
+                <v-text-field
+                  v-model="form.org_address"
+                  label="Organization Address"
+                />
+                <v-text-field v-model="form.gst_number" label="GST Number" />
+                <v-text-field
+                  v-model="form.organization"
+                  label="Organization ID"
+                />
+
+                <v-btn color="success" class="mt-4" @click="submitForm">
+                  Submit
+                </v-btn>
+
+                <v-alert v-if="error" type="error" class="mt-3">
+                  {{ error }}
+                </v-alert>
+              </v-card>
+            </v-stepper-window-item>
+          </v-stepper-window>
+        </v-stepper>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { ref, reactive } from "vue";
 
-const email = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const otp = ref('')
-const visible = ref(false)
+const step = ref(1);
+const email = ref("");
+const otp = ref("");
+const error = ref("");
+const snackbar = ref(false);
+const snackbarMessage = ref("");
+const otpSuccess = ref(false);
 
-const snackbar = ref(false)
-const snackbarMessage = ref('')
-const snackbarColor = ref('success')
+const form = reactive({
+  user_first_name: "",
+  user_last_name: "",
+  org_name: "",
+  org_address: "",
+  gst_number: "",
+  organization: "",
+});
 
-const router = useRouter()
-
-const handleRegister = async () => {
+const sendOtp = async () => {
   try {
-    await axios.post('http://127.0.0.1:8000/api/v1/auth/register/', {
-      email: email.value,
-      password: password.value,
-      confirm_password: confirmPassword.value,
-      otp: otp.value,
-    })
+    const res = await fetch("http://127.0.0.1:8000/api/v1/request-otp/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.value }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Failed to send OTP");
 
-    snackbarMessage.value = 'Registration successful! Redirecting to login...'
-    snackbarColor.value = 'success'
-    snackbar.value = true
+    error.value = "";
+    snackbarMessage.value = "OTP sent successfully!";
+    snackbar.value = true;
 
     setTimeout(() => {
-      router.push('/login')
-    }, 60)
-  } catch (error) {
-    snackbarMessage.value = error.response?.data?.message || 'Registration failed!'
-    snackbarColor.value = 'error'
-    snackbar.value = true
+      step.value = 2;
+    }, 1000);
+  } catch (err) {
+    error.value = err.message;
   }
-}
+};
+
+const verifyOtp = async () => {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/v1/verify-otp/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.value, otp: otp.value }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Invalid OTP");
+
+    error.value = "";
+    otpSuccess.value = true;
+
+    setTimeout(() => {
+      otpSuccess.value = false;
+      step.value = 3;
+    }, 1500);
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+
+const submitForm = async () => {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/v1/onboarding/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.value, ...form }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Submission failed");
+
+    error.value = "";
+    alert("Successfully submitted!");
+  } catch (err) {
+    error.value = err.message;
+  }
+};
 </script>
+
+<style scoped>
+.otp-input input {
+  text-align: center;
+  letter-spacing: 8px;
+  font-size: 1.5rem;
+}
+</style>
