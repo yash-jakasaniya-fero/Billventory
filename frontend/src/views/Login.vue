@@ -61,22 +61,30 @@ const error = ref("");
 
 const login = async () => {
   try {
-    // const res = await fetch("http://127.0.0.1:8000/api/v1/login/", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(form.value),
-    // });
+    const { email, password } = form.value;
 
-    // const data = await res.json();
-    // if (!res.ok) throw new Error(data.detail || "Login failed");
+    let role = null;
 
-    // error.value = "";
+    if (email === "admin" && password === "admin") {
+      role = "admin";
+    } else if (email === "org_admin" && password === "org_admin") {
+      role = "org";
+    } else {
+      throw new Error("Invalid credentials");
+    }
 
     // Store user data in localStorage
-    // localStorage.setItem("user", JSON.stringify(data.user)); // Save user data
+    const userData = { email, role };
+    localStorage.setItem("user", JSON.stringify(userData));
 
-    // Redirect to Dashboard
-    router.push({ name: "Dashboard" }); // Replace with your dashboard route name
+    // Redirect based on role
+    if (role === "admin") {
+      router.push({ name: "AdminOrganizations" }); // or your actual admin dashboard route
+    } else if (role === "org") {
+      router.push({ name: "OrgDashboard" });
+    }
+
+    error.value = "";
   } catch (err) {
     error.value = err.message;
   }

@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import AuthLayout from "@/layouts/AuthLayout.vue";
+import adminRoutes from "./admin";
+import orgRoutes from "./org";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
-import HomePageLayout from "@/layouts/HomePageLayout.vue";
 
 const routes = [
   // Landing Page
   {
     path: "/",
-    component: HomePageLayout,
+    component: DefaultLayout,
     children: [
       {
         path: "",
@@ -44,7 +44,7 @@ const routes = [
   // Auth Pages
   {
     path: "/auth",
-    component: HomePageLayout,
+    component: DefaultLayout,
     children: [
       {
         path: "login",
@@ -61,18 +61,8 @@ const routes = [
     ],
   },
   // Authenticated Pages
-  {
-    path: "/dashboard",
-    component: DefaultLayout,
-    children: [
-      {
-        path: "",
-        name: "Dashboard",
-        component: () => import("@/pages/DashboardView.vue"),
-        meta: { requiresAuth: true, title: "Dashboard" },
-      },
-    ],
-  },
+  ...adminRoutes,
+  ...orgRoutes,
 ];
 
 const router = createRouter({
