@@ -6,8 +6,75 @@ from rest_framework.response import Response
 
 from .models import Organization, OrganizationUser, OrganizationSubscription, OrganizationInventory, \
     OrganizationProduct, OrganizationBilling, OrganizationBillingItem, OrganizationPurchaseItem, \
-    OrganizationPurchaseOrder, Supplier
+    OrganizationPurchaseOrder, Supplier, OrganizationOnBoarding
 
+
+class EmailOTPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrganizationOnBoarding
+        fields = ['email']
+        extra_kwargs = {
+            'email': {'validators': []}
+        }
+
+    def validate_email(self, attrs):
+        instance = OrganizationOnBoarding.objects.filter(email=attrs).first()
+        if instance and instance.is_verified:
+            raise serializers.ValidationError("This email is already verified.")
+        return attrs
+
+class EmailOTPVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+
+    def validate(self, attrs):
+        email = attrs['email']
+        otp = attrs.get('otp')
+
+        try:
+            instance = OrganizationOnBoarding.objects.get(email=email)
+        except OrganizationOnBoarding.DoesNotExist:
+            raise serializers.ValidationError("OTP was not requested for this email.")
+
+        if instance.is_verified:
+            raise serializers.ValidationError("This email has already been verified.")
+
+        if instance.otp != otp:
+            raise serializers.ValidationError("The OTP you entered is invalid.")
+
+        return attrs
+
+    def create(self, validated_data):
+        otp_obj = validated_data['otp_obj']
+        otp_obj.is_verified = True
+        otp_obj.save()
+        return otp_obj
+
+class OrganizationOnBoardingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrganizationOnBoarding
+        fields = '__all__'
+
+    def validate_email(self, value):
+        try:
+            instance = OrganizationOnBoarding.objects.get(email=value)
+        except OrganizationOnBoarding.DoesNotExist:
+            raise serializers.ValidationError("You must verify your email before completing onboarding.")
+
+        if not instance.is_verified:
+            raise serializers.ValidationError("Email is not verified.")
+        return value
+
+    def create(self, validated_data):
+        email = validated_data['email']
+        OrganizationOnBoarding.objects.filter(email=email).update(is_verified=True)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 class OrganizationUserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,22 +1,36 @@
 import random
 import string
 from email.policy import default
-from authentication.models import CustomUser
-
+from django.utils import timezone
+from datetime import timedelta
 from django.db import models
 import uuid
 from lib.models import BaseModel
 from lib.choices import RoleChoices, StatusChoices, PaymentMethodChoices
-from authentication.models import CustomUser
+
+
+class OrganizationOnBoarding(BaseModel):
+    email = models.EmailField(unique=True)
+    otp = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False,blank=True, null=True)
+    user_first_name = models.CharField(max_length=25,blank=True, null=True)
+    user_last_name = models.CharField(max_length=25,blank=True, null=True)
+    org_name = models.CharField(max_length=255,blank=True, null=True)
+    org_address = models.CharField(max_length=255,blank=True, null=True)
+    gst_number = models.CharField(max_length=15,blank=True, null=True)
+    organization = models.ForeignKey("Organization", related_name='organization_onboarding',on_delete=models.CASCADE,blank=True, null=True)
+
+    def __str__(self):
+        return self.org_name
 
 class OrganizationUser(BaseModel):
-    org_user = models.CharField(max_length=100, default=False)
+    user_name = models.CharField(max_length=100, default=True)
     user_email = models.EmailField(unique=True)
     user_role = models.CharField(choices=RoleChoices.choices, max_length=50)
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ['org_user']
+        unique_together = ['user_email']
 
 
 class Organization(BaseModel):
