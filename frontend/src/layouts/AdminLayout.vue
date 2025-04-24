@@ -1,41 +1,100 @@
 <template>
   <v-app>
-    <v-navigation-drawer app permanent class="elevation-4">
-      <v-row class="pa-4" align="center">
-        <v-icon icon="mdi-package-variant-closed" class="mr-2" size="36"></v-icon>
-        <span class="font-weight-bold text-green-700 text-xl">Billventory</span>
+    <v-app-bar>
+      <v-row class="ma-0" justify="space-between" align="center">
+        <v-col>
+          <v-icon
+            icon="mdi-package-variant-closed"
+            color="black"
+            size="32"
+            @click="$router.push({ name: 'HomePage' })"
+          ></v-icon>
+          <span
+            class="font-weight-bold text-green-700 text-xl"
+            @click="$router.push({ name: 'HomePage' })"
+          >
+            Billventory
+          </span>
+        </v-col>
+
+        <v-col cols="auto">
+          <v-menu location="bottom end">
+            <template #activator="{ props }">
+              <v-avatar color="black" v-bind="props" class="cursor-pointer">
+                <v-icon color="white" icon="mdi-account-circle"></v-icon>
+              </v-avatar>
+            </template>
+
+            <v-list>
+              <v-list-item @click="$router.push({ name: 'ProfilePage' })">
+                <v-list-item-title>Profile</v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                @click="$router.push({ name: 'ChangePasswordPage' })"
+              >
+                <v-list-item-title>Change Password</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="logout">
+                <v-list-item-title>Logout</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-col>
       </v-row>
-      <v-divider></v-divider>
-      <v-list nav dense>
+    </v-app-bar>
+
+    <v-navigation-drawer>
+      <v-list nav>
         <v-list-item
           v-for="(page, index) in adminLinks"
           :key="page.name"
-          :to="{name: page.name}"
-          link
+          :to="{ name: page.name }"
           class="nav-item"
-          @mouseover="onMouseOver(index)"
-          @mouseleave="onMouseLeave"
-          :class="{'active-item': isActive(index)}"
+          :class="{ 'active-item': isActive(index) }"
         >
-          <v-list-item-icon>
-            <v-icon>{{ page.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>{{ page.title }}</v-list-item-title>
+          <v-list-item
+            :prepend-icon="page.icon"
+            :title="page.title"
+            value="inbox"
+          ></v-list-item>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-main>
-      <router-view />
+
+    <v-main class="d-flex justify-center bg-cover">
+      <v-container>
+        <router-view />
+      </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const logout = () => {
+  // Clear user info from localStorage
+  localStorage.removeItem("user");
+  localStorage.removeItem("token"); // or any other keys you store
+
+  // Redirect to login page
+  router.push({ name: "Login" });
+};
 
 const adminLinks = [
-  { name: "AdminOrganizations", title: "Organizations", icon: "mdi-account-group" },
-  { name: "AdminOnboarding", title: "Onboarding Requests", icon: "mdi-account-plus" },
+  {
+    name: "AdminOrganizations",
+    title: "Organizations",
+    icon: "mdi-account-group",
+  },
+  {
+    name: "AdminOnboarding",
+    title: "Onboarding Requests",
+    icon: "mdi-account-plus",
+  },
   { name: "AdminSupport", title: "Support", icon: "mdi-headset" },
   { name: "AdminSettings", title: "Settings", icon: "mdi-cogs" },
 ];
@@ -53,59 +112,3 @@ const onMouseLeave = () => {
 };
 </script>
 
-<style scoped>
-.nav-item {
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  padding: 12px 24px;
-}
-
-.nav-item:hover {
-  background-color: #f4f7f6;
-  transform: scale(1.05);
-}
-
-.active-item {
-  background-color: #16a34a;
-  color: white !important;
-}
-
-.v-navigation-drawer .v-row {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding-bottom: 16px;
-}
-
-.v-navigation-drawer {
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.v-icon {
-  font-size: 24px;
-  color: #16a34a;
-}
-
-.v-list-item-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
-}
-
-.v-main {
-  background-color: #f9fafb;
-}
-
-.v-list-item-title {
-  transition: transform 0.3s ease;
-}
-
-.v-app-bar-title {
-  font-weight: bold;
-  font-size: 20px;
-}
-
-.v-divider {
-  margin: 20px 0;
-}
-</style>
