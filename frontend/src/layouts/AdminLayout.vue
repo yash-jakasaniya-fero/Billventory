@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar>
+    <v-app-bar class="app-bar">
       <v-row class="ma-0" justify="space-between" align="center">
         <v-col>
           <v-icon
@@ -10,7 +10,7 @@
             @click="$router.push({ name: 'HomePage' })"
           ></v-icon>
           <span
-            class="font-weight-bold text-green-700 text-xl"
+            class="font-weight-bold text-xl"
             @click="$router.push({ name: 'HomePage' })"
           >
             Billventory
@@ -20,8 +20,8 @@
         <v-col cols="auto">
           <v-menu location="bottom end">
             <template #activator="{ props }">
-              <v-avatar color="black" v-bind="props" class="cursor-pointer">
-                <v-icon color="white" icon="mdi-account-circle"></v-icon>
+              <v-avatar v-bind="props" class="cursor-pointer">
+                <v-icon color="black" large icon="mdi-account-circle"></v-icon>
               </v-avatar>
             </template>
 
@@ -43,20 +43,21 @@
       </v-row>
     </v-app-bar>
 
-    <v-navigation-drawer>
+    <v-navigation-drawer class="app-bar">
       <v-list nav>
         <v-list-item
           v-for="(page, index) in adminLinks"
           :key="page.name"
           :to="{ name: page.name }"
-          class="nav-item"
-          :class="{ 'active-item': isActive(index) }"
+          :active="isActiveRoute(page.name)"
+          class="flat-nav"
         >
-          <v-list-item
-            :prepend-icon="page.icon"
-            :title="page.title"
-            value="inbox"
-          ></v-list-item>
+          <template #prepend>
+            <v-icon color="black">{{ page.icon }}</v-icon>
+          </template>
+          <v-list-item-title class="font-weight-bold text-xl">{{
+            page.title
+          }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -74,6 +75,10 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
+
+const isActiveRoute = (routeName) => {
+  return router.name === routeName;
+};
 
 const logout = () => {
   // Clear user info from localStorage
@@ -98,17 +103,25 @@ const adminLinks = [
   { name: "AdminSupport", title: "Support", icon: "mdi-headset" },
   { name: "AdminSettings", title: "Settings", icon: "mdi-cogs" },
 ];
-
-const activeLinkIndex = ref(null);
-
-const isActive = (index) => activeLinkIndex.value === index;
-
-const onMouseOver = (index) => {
-  activeLinkIndex.value = index;
-};
-
-const onMouseLeave = () => {
-  activeLinkIndex.value = null;
-};
 </script>
 
+<style scoped>
+.app-bar {
+  background-color: white;
+  color: #16a34a;
+}
+
+.flat-nav {
+  background-color: transparent !important;
+  transition: none;
+}
+
+.flat-nav:hover {
+  background-color: transparent !important;
+}
+
+.flat-nav.v-list-item--active {
+  background-color: #e0f2f1 !important; /* light green or your theme */
+  font-weight: bold;
+}
+</style>
