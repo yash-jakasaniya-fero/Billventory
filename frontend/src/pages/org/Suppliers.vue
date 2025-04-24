@@ -62,10 +62,10 @@
   })
   
   const colors = {
-  card: '#FFF5E5',
+  card: '#f9fafb',
   text: '#0C0F0A',
-  header: '#D7CFFF',
-  headerText: '#7C6DD4'
+  header: '#16a34a',
+  headerText: '#ffffff'
 }
   
   const fetchInventory = async () => {

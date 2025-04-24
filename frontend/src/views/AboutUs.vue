@@ -132,14 +132,14 @@
             <v-col cols="12" sm="6" md="4">
                 <v-card class="mx-auto" max-width="300">
                     <v-img
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
+                        src=""
                         height="300" cover></v-img>
                     <v-card-item>
-                        <v-card-title>Emma Thompson</v-card-title>
-                        <v-card-subtitle class="text-primary">CEO & Founder</v-card-subtitle>
+                        <v-card-title>Keval Patel</v-card-title>
+                        <v-card-subtitle class="text-primary">President</v-card-subtitle>
                     </v-card-item>
                     <v-card-text>
-                        With over 15 years of experience in business management, Emma founded Billventory to solve
+                        With over 15 years of experience in business management, Keval founded Billventory to solve
                         real-world inventory challenges.
                     </v-card-text>
                 </v-card>
@@ -148,14 +148,14 @@
             <v-col cols="12" sm="6" md="4">
                 <v-card class="mx-auto" max-width="300">
                     <v-img
-                        src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
+                        src=""
                         height="300" cover></v-img>
                     <v-card-item>
-                        <v-card-title>Michael Chen</v-card-title>
-                        <v-card-subtitle class="text-primary">CTO</v-card-subtitle>
+                        <v-card-title>Jagat Panchal</v-card-title>
+                        <v-card-subtitle class="text-primary">Vice President</v-card-subtitle>
                     </v-card-item>
                     <v-card-text>
-                        Michael leads our technical team, bringing his expertise in software architecture and cloud
+                        Jagat leads our technical team, bringing his expertise in software architecture and cloud
                         infrastructure to build a robust platform.
                     </v-card-text>
                 </v-card>
@@ -164,14 +164,14 @@
             <v-col cols="12" sm="6" md="4">
                 <v-card class="mx-auto" max-width="300">
                     <v-img
-                        src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
+                        src=""
                         height="300" cover></v-img>
                     <v-card-item>
-                        <v-card-title>Sophia Rodriguez</v-card-title>
-                        <v-card-subtitle class="text-primary">Head of Product</v-card-subtitle>
+                        <v-card-title>Yash Jakasaniya</v-card-title>
+                        <v-card-subtitle class="text-primary">Devloper</v-card-subtitle>
                     </v-card-item>
                     <v-card-text>
-                        Sophia ensures our product meets real user needs, with a focus on creating intuitive and
+                        Yash ensures our product meets real user needs, with a focus on creating intuitive and
                         powerful features.
                     </v-card-text>
                 </v-card>

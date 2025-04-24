@@ -88,13 +88,13 @@
                     <v-text-field v-model="item.unit_price" label="Unit Price" type="number"></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="2" class="d-flex align-center">
-                    <v-btn icon @click="removeItem(index)">
+                    <v-btn color="red" icon @click="removeItem(index)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
   
-                <v-btn color="primary" class="mt-2" @click="addItem">Add Item</v-btn>
+                <v-btn color="green" class="mt-2" @click="addItem">Add Item</v-btn>
               </v-container>
             </v-card-text>
   
@@ -120,10 +120,10 @@ const purchasemodalItems = ref([])
 const purchaseorderList = ref([])
 
 const colors = {
-  card: '#FFF5E5',
+  card: '#f9fafb',
   text: '#0C0F0A',
-  header: '#D7CFFF',
-  headerText: '#7C6DD4'
+  header: '#16a34a',
+  headerText: '#ffffff'
 }
   
   const fetchPurchaseorder = async () => {

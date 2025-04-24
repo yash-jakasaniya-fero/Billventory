@@ -44,6 +44,15 @@
           Don’t have an account? Register
         </router-link>
       </v-card-actions>
+
+      <v-card-actions class="justify-center">
+        <router-link
+          :to="{ name: 'AdminLogin' }"
+          class="text-green text-decoration-none"
+        >
+          Admin Login
+        </router-link>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
