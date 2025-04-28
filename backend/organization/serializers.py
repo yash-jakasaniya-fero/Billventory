@@ -85,7 +85,7 @@ class OrganizationUserSerializer(serializers.ModelSerializer):
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = ['org_id', 'user', 'org_name', 'org_address', 'org_logo', 'has_gst_number', 'gst_number']
+        fields = ['org_id', 'user', 'org_name', 'org_address', 'org_logo', 'gst_number']
 
     def validate_user(self, value):
         if Organization.objects.filter(user=value).exists():

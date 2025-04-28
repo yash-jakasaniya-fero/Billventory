@@ -24,7 +24,8 @@ class OrganizationOnBoarding(BaseModel):
         return self.org_name
 
 class OrganizationUser(BaseModel):
-    user_name = models.CharField(max_length=100, default=True)
+    user_first_name = models.CharField(max_length=25, blank=True, null=True)
+    user_last_name = models.CharField(max_length=25, blank=True, null=True)
     user_email = models.EmailField(unique=True)
     user_role = models.CharField(choices=RoleChoices.choices, max_length=50)
     is_active = models.BooleanField(default=True)
@@ -39,7 +40,6 @@ class Organization(BaseModel):
     org_name = models.CharField(max_length=255)
     org_address = models.CharField(max_length=255)
     org_logo = models.ImageField(blank=True, null=True)
-    has_gst_number = models.BooleanField(default=False)
     gst_number = models.CharField(max_length=15, blank=True, null=True)
 
 

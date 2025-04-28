@@ -70,14 +70,14 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
-    def perform_create(self, serializer):
-        serializer.save()
-
-    @action(detail=False, methods=['get'])
-    def list_organizations(self, request):
-        organizations = Organization.objects.filter(user=request.user)
-        serializer = self.get_serializer(organizations, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # def perform_create(self, serializer):
+    #     serializer.save()
+    #
+    # @action(detail=False, methods=['get'])
+    # def list_organizations(self, request):
+    #     organizations = Organization.objects.filter(user=request.user)
+    #     serializer = self.get_serializer(organizations, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class OrganizationUserViewSet(BaseView):
