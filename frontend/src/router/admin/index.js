@@ -4,6 +4,12 @@ export default [
     component: () => import("@/layouts/AdminLayout.vue"),
     children: [
       {
+        path: "dashboard",
+        name: "AdminDashboard",
+        component: () => import("@/pages/admin/Dashboard.vue"),
+        meta: { requiresAuth: true, role: "admin" },
+      },
+      {
         path: "organizations",
         name: "AdminOrganizations",
         component: () => import("@/pages/admin/Organizations.vue"),

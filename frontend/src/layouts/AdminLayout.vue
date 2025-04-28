@@ -3,16 +3,9 @@
     <v-app-bar class="app-bar">
       <v-row class="ma-0" justify="space-between" align="center">
         <v-col>
-          <v-icon
-            icon="mdi-package-variant-closed"
-            color="black"
-            size="32"
-            @click="$router.push({ name: 'HomePage' })"
-          ></v-icon>
-          <span
-            class="font-weight-bold text-xl"
-            @click="$router.push({ name: 'HomePage' })"
-          >
+          <v-icon icon="mdi-package-variant-closed" color="black" size="32"
+            @click="$router.push({ name: 'HomePage' })"></v-icon>
+          <span class="font-weight-bold text-xl" @click="$router.push({ name: 'HomePage' })">
             Billventory
           </span>
         </v-col>
@@ -29,9 +22,7 @@
               <v-list-item @click="$router.push({ name: 'ProfilePage' })">
                 <v-list-item-title>Profile</v-list-item-title>
               </v-list-item>
-              <v-list-item
-                @click="$router.push({ name: 'ChangePasswordPage' })"
-              >
+              <v-list-item @click="$router.push({ name: 'ChangePasswordPage' })">
                 <v-list-item-title>Change Password</v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">
@@ -45,13 +36,8 @@
 
     <v-navigation-drawer class="app-bar">
       <v-list nav>
-        <v-list-item
-          v-for="(page, index) in adminLinks"
-          :key="page.name"
-          :to="{ name: page.name }"
-          :active="isActiveRoute(page.name)"
-          class="flat-nav"
-        >
+        <v-list-item v-for="(page, index) in adminLinks" :key="page.name" :to="{ name: page.name }"
+          :active="isActiveRoute(page.name)" class="flat-nav">
           <template #prepend>
             <v-icon color="black">{{ page.icon }}</v-icon>
           </template>
@@ -91,6 +77,11 @@ const logout = () => {
 
 const adminLinks = [
   {
+    name: "AdminDashboard",
+    title: "Dashboard",
+    icon: "mdi-view-dashboard",
+  },
+  {
     name: "AdminOrganizations",
     title: "Organizations",
     icon: "mdi-account-group",
@@ -121,7 +112,8 @@ const adminLinks = [
 }
 
 .flat-nav.v-list-item--active {
-  background-color: #e0f2f1 !important; /* light green or your theme */
+  background-color: #e0f2f1 !important;
+  /* light green or your theme */
   font-weight: bold;
 }
 </style>
